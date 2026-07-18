@@ -84,13 +84,16 @@ st.markdown(
     [data-testid="stSidebar"] {{
         background-color: {PRIMARY_GREEN};
     }}
-    [data-testid="stSidebar"] * {{ color: white !important; }}
-    /* Keep the selected value in the dropdown boxes readable (dark text on white) */
-    [data-testid="stSidebar"] [data-baseweb="select"] > div {{
-        background-color: white;
-    }}
-    [data-testid="stSidebar"] [data-baseweb="select"] * {{
-        color: {TEXT_DARK} !important;
+    /* Only force white on labels/headings/captions - NOT on the dropdown
+       boxes themselves, so their native (readable) text stays visible. */
+    [data-testid="stSidebar"] label,
+    [data-testid="stSidebar"] h1,
+    [data-testid="stSidebar"] h2,
+    [data-testid="stSidebar"] h3,
+    [data-testid="stSidebar"] p,
+    [data-testid="stSidebar"] .stMarkdown,
+    [data-testid="stSidebar"] [data-testid="stCaptionContainer"] {{
+        color: white !important;
     }}
     </style>
     
@@ -108,7 +111,7 @@ st.markdown(
 # 2. DATA LOADING (cached so files are only read once)
 # --------------------------------------------------------------------------
 @st.cache_data
-def load_wfp_data(path="wfp_food_prices_lka.csv"):
+def load_wfp_data(path="data/wfp_food_prices_lka.csv"):
     """Load actual historical rice prices (district + rice type level)."""
     df = pd.read_csv(path, skiprows=[1])  # row 1 is a HXL tag row, not data
     df["date"] = pd.to_datetime(df["date"])
@@ -120,7 +123,7 @@ def load_wfp_data(path="wfp_food_prices_lka.csv"):
 
 
 @st.cache_data
-def load_forecast_data(path="rice_predictions.csv"):
+def load_forecast_data(path="data/rice_predictions.csv"):
     """Load the PaddyTrack model's feature/prediction dataset (national/aggregate)."""
     df = pd.read_csv(path)
     df["Date"] = pd.to_datetime(df["Date"])
