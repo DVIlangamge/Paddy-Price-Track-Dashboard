@@ -190,7 +190,7 @@ volatility_score = float(np.clip(cv * 3, 0, 100))  # scaled for a readable gauge
 # --------------------------------------------------------------------------
 # 5. KPI ROW
 # --------------------------------------------------------------------------
-k1, k2, k3, k4 = st.columns(4)
+k1, k2, k3 = st.columns(3)
 
 with k1:
     arrow = "▲" if price_change_pct >= 0 else "▼"
@@ -350,29 +350,6 @@ with col_err_chart:
         yaxis_title="Price",
     )
     st.plotly_chart(fig_err, use_container_width=True)
-
-with col_err_metrics:
-    mae = forecast["abs_error"].mean()
-    rmse = np.sqrt((forecast["abs_error"] ** 2).mean())
-    mape = forecast["pct_error"].mean()
-
-    st.markdown(
-        f"""
-        <div class="kpi-card" style="margin-bottom:10px;">
-            <div class="kpi-label">MAE</div>
-            <div class="kpi-value">{mae:,.2f}</div>
-        </div>
-        <div class="kpi-card" style="margin-bottom:10px;">
-            <div class="kpi-label">RMSE</div>
-            <div class="kpi-value">{rmse:,.2f}</div>
-        </div>
-        <div class="kpi-card">
-            <div class="kpi-label">MAPE</div>
-            <div class="kpi-value">{mape:,.2f}%</div>
-        </div>
-        """,
-        unsafe_allow_html=True,
-    )
 
 st.markdown("---")
 st.caption(
