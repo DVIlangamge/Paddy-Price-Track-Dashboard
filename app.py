@@ -223,17 +223,6 @@ with k3:
         unsafe_allow_html=True,
     )
 
-with k4:
-    mae = forecast["abs_error"].mean()
-    st.markdown(
-        f"""<div class="kpi-card">
-        <div class="kpi-label">Model MAE</div>
-        <div class="kpi-value">LKR {mae:,.2f}</div>
-        <div class="kpi-sub">Mean absolute error, forecast vs actual</div>
-        </div>""",
-        unsafe_allow_html=True,
-    )
-
 # --------------------------------------------------------------------------
 # 6. PRICE TREND + VOLATILITY GAUGE
 # --------------------------------------------------------------------------
