@@ -108,7 +108,7 @@ st.markdown(
 # 2. DATA LOADING (cached so files are only read once)
 # --------------------------------------------------------------------------
 @st.cache_data
-def load_wfp_data(path="data/wfp_food_prices_lka.csv"):
+def load_wfp_data(path="wfp_food_prices_lka.csv"):
     """Load actual historical rice prices (district + rice type level)."""
     df = pd.read_csv(path, skiprows=[1])  # row 1 is a HXL tag row, not data
     df["date"] = pd.to_datetime(df["date"])
@@ -120,7 +120,7 @@ def load_wfp_data(path="data/wfp_food_prices_lka.csv"):
 
 
 @st.cache_data
-def load_forecast_data(path="data/rice_predictions.csv"):
+def load_forecast_data(path="rice_predictions.csv"):
     """Load the PaddyTrack model's feature/prediction dataset (national/aggregate)."""
     df = pd.read_csv(path)
     df["Date"] = pd.to_datetime(df["Date"])
