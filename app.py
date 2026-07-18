@@ -85,7 +85,15 @@ st.markdown(
         background-color: {PRIMARY_GREEN};
     }}
     [data-testid="stSidebar"] * {{ color: white !important; }}
+    /* Keep the selected value in the dropdown boxes readable (dark text on white) */
+    [data-testid="stSidebar"] [data-baseweb="select"] > div {{
+        background-color: white;
+    }}
+    [data-testid="stSidebar"] [data-baseweb="select"] * {{
+        color: {TEXT_DARK} !important;
+    }}
     </style>
+    
     """,
     unsafe_allow_html=True,
 )
@@ -100,7 +108,7 @@ st.markdown(
 # 2. DATA LOADING (cached so files are only read once)
 # --------------------------------------------------------------------------
 @st.cache_data
-def load_wfp_data(path="wfp_food_prices_lka.csv"):
+def load_wfp_data(path="data/wfp_food_prices_lka.csv"):
     """Load actual historical rice prices (district + rice type level)."""
     df = pd.read_csv(path, skiprows=[1])  # row 1 is a HXL tag row, not data
     df["date"] = pd.to_datetime(df["date"])
@@ -112,7 +120,7 @@ def load_wfp_data(path="wfp_food_prices_lka.csv"):
 
 
 @st.cache_data
-def load_forecast_data(path="rice_predictions.csv"):
+def load_forecast_data(path="data/rice_predictions.csv"):
     """Load the PaddyTrack model's feature/prediction dataset (national/aggregate)."""
     df = pd.read_csv(path)
     df["Date"] = pd.to_datetime(df["Date"])
@@ -179,7 +187,7 @@ volatility_score = float(np.clip(cv * 3, 0, 100))  # scaled for a readable gauge
 # --------------------------------------------------------------------------
 # 5. KPI ROW
 # --------------------------------------------------------------------------
-k1, k2, k3 = st.columns(3)
+k1, k2, k3, k4 = st.columns(4)
 
 with k1:
     arrow = "▲" if price_change_pct >= 0 else "▼"
@@ -212,6 +220,16 @@ with k3:
         unsafe_allow_html=True,
     )
 
+with k4:
+    mae = forecast["abs_error"].mean()
+    st.markdown(
+        f"""<div class="kpi-card">
+        <div class="kpi-label">Model MAE</div>
+        <div class="kpi-value">LKR {mae:,.2f}</div>
+        <div class="kpi-sub">Mean absolute error, forecast vs actual</div>
+        </div>""",
+        unsafe_allow_html=True,
+    )
 
 # --------------------------------------------------------------------------
 # 6. PRICE TREND + VOLATILITY GAUGE
@@ -329,6 +347,29 @@ with col_err_chart:
         yaxis_title="Price",
     )
     st.plotly_chart(fig_err, use_container_width=True)
+
+with col_err_metrics:
+    mae = forecast["abs_error"].mean()
+    rmse = np.sqrt((forecast["abs_error"] ** 2).mean())
+    mape = forecast["pct_error"].mean()
+
+    st.markdown(
+        f"""
+        <div class="kpi-card" style="margin-bottom:10px;">
+            <div class="kpi-label">MAE</div>
+            <div class="kpi-value">{mae:,.2f}</div>
+        </div>
+        <div class="kpi-card" style="margin-bottom:10px;">
+            <div class="kpi-label">RMSE</div>
+            <div class="kpi-value">{rmse:,.2f}</div>
+        </div>
+        <div class="kpi-card">
+            <div class="kpi-label">MAPE</div>
+            <div class="kpi-value">{mape:,.2f}%</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
 
 st.markdown("---")
 st.caption(
